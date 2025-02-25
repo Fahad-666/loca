@@ -32,7 +32,7 @@ const App = () => {
             })
             .catch((error) => {
                 console.error("Error fetching IP info:", error);
-                setLocation("Could not fetch location.");
+                setLocation(error);
             });
     }, []);
 
