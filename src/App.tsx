@@ -7,32 +7,17 @@ const App = () => {
     const [ip, setIp] = useState<string>("Fetching IP...");
 
     useEffect(() => {
-        // Get user's coordinates
-        if ("geolocation" in navigator) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const { latitude, longitude } = position.coords;
-                    setCoordinates({ lat: latitude, lon: longitude });
-                },
-                (error) => {
-                    setLocation("Location access denied!");
-                    console.error("Geolocation error:", error);
-                }
-            );
-        } else {
-            setLocation("Geolocation is not supported by your browser.");
-        }
-
-        // Get user's IP and location data using ip-api.com (No API key required)
+        // Fetch IP-based location data without permission
         axios.get("http://ip-api.com/json")
             .then((response) => {
-                const { query, city, regionName, country } = response.data;
+                const { query, city, regionName, country, lat, lon } = response.data;
                 setIp(query);
                 setLocation(`${city}, ${regionName}, ${country}`);
+                setCoordinates({ lat, lon }); // Approximate coordinates based on IP
             })
             .catch((error) => {
                 console.error("Error fetching IP info:", error);
-                setLocation(error);
+                setLocation("Could not fetch location.");
             });
     }, []);
 
@@ -42,7 +27,7 @@ const App = () => {
             <p><strong>IP Address:</strong> {ip}</p>
             <p><strong>Location:</strong> {location}</p>
             {coordinates && (
-                <p><strong>Coordinates:</strong> {coordinates.lat}, {coordinates.lon}</p>
+                <p><strong>Approx. Coordinates:</strong> {coordinates.lat}, {coordinates.lon}</p>
             )}
         </div>
     );
